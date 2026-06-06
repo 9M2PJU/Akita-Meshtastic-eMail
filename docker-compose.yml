@@ -1,0 +1,44 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  akita-email:
+    build: .
+    image: akita-email:latest
+    container_name: akita_email
+    restart: unless-stopped
+    
+    # Required to run the interactive companion CLI inside the container
+    stdin_open: true
+    tty: true
+    
+    # Persist database and logs
+    volumes:
+      - ./data:/app/data
+      
+    environment:
+      # --- Meshtastic Node Connection Config ---
+      # OPTION A: Connect via TCP (e.g. if node is connected to Wi-Fi)
+      # Uncomment and set the IP or hostname of your Meshtastic node:
+      # - AKITA_MESHTASTIC_HOST=192.168.1.100
+      
+      # OPTION B: Connect via Serial/USB
+      # Uncomment and set the device path (ensure it is also mapped under 'devices'):
+      # - AKITA_MESHTASTIC_PORT=/dev/ttyACM0
+
+      # --- Other Configs ---
+      - AKITA_PRIMARY_CHANNEL=0
+      - AKITA_HOP_LIMIT=7
+      - AKITA_RETRY_INTERVAL=300
+      - AKITA_EXPIRY_TIME=21600
+
+    # For Serial/USB connection (Option B), uncomment the block below
+    # and map the physical port of the Meshtastic device on the host:
+    # devices:
+    #   - /dev/ttyACM0:/dev/ttyACM0
+
+    # Command modes:
+    # 'both' (default) - Starts the plugin in background, starts interactive CLI in foreground
+    # 'plugin'         - Starts only the background plugin server
+    # 'companion'      - Starts only the interactive client CLI
+    command: both

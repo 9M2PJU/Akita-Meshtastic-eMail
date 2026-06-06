@@ -1,5 +1,6 @@
 # akita_email/config.py
 import logging
+import os
 import sys
 
 # --- General Configuration ---
@@ -7,19 +8,19 @@ APP_NAME = "AkitaEmail"
 VERSION = "0.2.0" # Indicate refactored version
 
 # --- Meshtastic Plugin Configuration ---
-PLUGIN_DATABASE_FILE = "akita_plugin_store.db"
-PLUGIN_LOG_FILE = "akita_plugin.log"
+PLUGIN_DATABASE_FILE = os.getenv("AKITA_DB_FILE", "akita_plugin_store.db")
+PLUGIN_LOG_FILE = os.getenv("AKITA_PLUGIN_LOG", "akita_plugin.log")
 PLUGIN_LOG_LEVEL = logging.INFO
 # Log Format - Consistent across modules
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 # --- Meshtastic Network Configuration ---
-PRIMARY_CHANNEL_INDEX = 0 # Explicitly use Channel 0 (Primary Channel)
-MESSAGE_HOP_LIMIT = 7     # Max hops for a message (Meshtastic default is often 3 or 7)
-MESSAGE_RETRY_INTERVAL = 60 * 5 # Seconds between retries for un-ACKed messages (5 minutes)
-MESSAGE_EXPIRY_TIME = 3600 * 6 # Seconds before giving up on a message (6 hours)
+PRIMARY_CHANNEL_INDEX = int(os.getenv("AKITA_PRIMARY_CHANNEL", "0")) # Explicitly use Channel 0 (Primary Channel)
+MESSAGE_HOP_LIMIT = int(os.getenv("AKITA_HOP_LIMIT", "7"))     # Max hops for a message (Meshtastic default is often 3 or 7)
+MESSAGE_RETRY_INTERVAL = int(os.getenv("AKITA_RETRY_INTERVAL", str(60 * 5))) # Seconds between retries for un-ACKed messages (5 minutes)
+MESSAGE_EXPIRY_TIME = int(os.getenv("AKITA_EXPIRY_TIME", str(3600 * 6))) # Seconds before giving up on a message (6 hours)
 # Use a private Meshtastic application port instead of the human text channel.
-MESHTASTIC_APP_PORT = 256
+MESHTASTIC_APP_PORT = int(os.getenv("AKITA_APP_PORT", "256"))
 MESHTASTIC_ACCEPTED_PORTS = {
     MESHTASTIC_APP_PORT,
     'PRIVATE_APP',
@@ -38,15 +39,15 @@ MESSAGE_ID_MAX_LENGTH = 64
 # Serial port the *plugin* uses to talk TO the companion CLI process
 # Example Linux: "/dev/ttyUSB0", Example macOS: "/dev/tty.usbserial-XYZ"
 # Example Windows: "COM3"
-COMPANION_SERIAL_PORT = "/dev/ttyUSB0" # CHANGE THIS TO YOUR PLUGIN -> COMPANION PORT
-COMPANION_SERIAL_BAUD = 115200
+COMPANION_SERIAL_PORT = os.getenv("AKITA_COMPANION_SERIAL_PORT", "/dev/ttyUSB0") # CHANGE THIS TO YOUR PLUGIN -> COMPANION PORT
+COMPANION_SERIAL_BAUD = int(os.getenv("AKITA_COMPANION_SERIAL_BAUD", "115200"))
 
 # --- Companion CLI Configuration ---
 # Serial port the *companion CLI* uses to talk TO the plugin process
 # Ensure this is DIFFERENT from COMPANION_SERIAL_PORT if using two serial adapters on one host.
-COMPANION_PLUGIN_PORT = "/dev/ttyACM0" # CHANGE THIS TO YOUR COMPANION -> PLUGIN PORT
-COMPANION_PLUGIN_BAUD = 115200
-COMPANION_LOG_FILE = "akita_companion.log"
+COMPANION_PLUGIN_PORT = os.getenv("AKITA_COMPANION_PLUGIN_PORT", "/dev/ttyACM0") # CHANGE THIS TO YOUR COMPANION -> PLUGIN PORT
+COMPANION_PLUGIN_BAUD = int(os.getenv("AKITA_COMPANION_PLUGIN_BAUD", "115200"))
+COMPANION_LOG_FILE = os.getenv("AKITA_COMPANION_LOG", "akita_companion.log")
 COMPANION_LOG_LEVEL = logging.INFO
 
 # --- Protocol Definitions ---

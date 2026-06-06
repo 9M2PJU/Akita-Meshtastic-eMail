@@ -79,6 +79,28 @@ You need to run **two** separate processes, typically in different terminal wind
     * The companion CLI will start and attempt to connect to the plugin process via the `COMPANION_PLUGIN_PORT`.
     * If the connection is successful, you will see a `--- Connected to Akita Plugin ---` message and the `Akita>` prompt.
 
+## Running with Docker
+
+You can run the entire system inside a Docker container. This packages all requirements (including `socat` for virtual serial ports) and simplifies configuration.
+
+### 1. Configure the Environment
+A `docker-compose.yml` file is provided in the project root. Edit it to configure how the plugin connects to your Meshtastic node:
+- **For TCP connection (node on Wi-Fi):** Uncomment `AKITA_MESHTASTIC_HOST` and set it to your node's IP address.
+- **For USB/Serial connection:** Uncomment `AKITA_MESHTASTIC_PORT`, specify your port, and ensure the port is mapped in the `devices` block.
+
+### 2. Run the Container
+Start both the plugin server (in the background) and the interactive companion CLI (in the foreground) using:
+```bash
+docker compose run --rm akita-email
+```
+When you exit the interactive companion CLI (via `exit` or `Ctrl+D`), the background plugin and virtual link will be stopped and cleaned up automatically.
+
+### Alternative Commands
+You can also run components individually or execute tests inside the container:
+- **Plugin Only (Server):** `docker compose run --rm akita-email plugin`
+- **Companion Only:** `docker compose run --rm akita-email companion`
+- **Run Unit Tests:** `docker compose run --rm akita-email python -m unittest discover -s tests`
+
 ## Usage (Companion CLI Commands)
 
 Type commands at the `Akita>` prompt:
